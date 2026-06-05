@@ -1,0 +1,164 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "implementation-super-agent",
+  "instructions": ["AGENTS.md"],
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+  "agent": {
+    "implementation-super-agent": {
+      "description": "Implementation Super Agent: coordina todo el ciclo Plan2Ship (Build -> Review -> Merge -> Ship). Orquesta subagentes y asegura cumplimiento del Project Blueprint.",
+      "mode": "primary",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "todowrite": "allow",
+        "question": "allow",
+        "webfetch": "allow",
+        "skill": "allow"
+      }
+    },
+    "backend-agent": {
+      "description": "Backend Agent: desarrolla logica de negocio, APIs REST y controladores siguiendo el Project Blueprint.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "frontend-agent": {
+      "description": "Frontend Agent: desarrolla interfaces de usuario y componentes siguiendo el Project Blueprint.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "database-agent": {
+      "description": "Database Agent: crea esquemas, tablas y migraciones siguiendo el diseno de base de datos del Project Blueprint.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "qa-agent": {
+      "description": "QA Agent: crea y ejecuta pruebas unitarias, de integracion y E2E segun los criterios de aceptacion del Project Blueprint.",
+      "mode": "subagent",
+      "permission": {
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "edit": "allow",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "devops-agent": {
+      "description": "DevOps Agent: configura entornos, Docker, CI/CD y despliegue segun la estrategia definida en el Project Blueprint.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "reviewer-agent": {
+      "description": "Reviewer Agent: audita el codigo contra el Project Blueprint verificando cumplimiento, arquitectura, pruebas y criterios de aceptacion.",
+      "mode": "subagent",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": { "git *": "allow", "*": "ask" },
+        "edit": "deny",
+        "task": "allow",
+        "skill": "allow"
+      }
+    },
+    "merge-supervisor-agent": {
+      "description": "Merge Supervisor Agent: decide si una rama puede integrarse a la rama principal basandose en los reportes del Reviewer y QA Agent.",
+      "mode": "subagent",
+      "permission": {
+        "bash": { "git *": "allow", "*": "ask" },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "edit": "deny",
+        "task": "allow",
+        "skill": "allow"
+      }
+    }
+  },
+  "mcp": {
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?features=storage,branching,functions,development,debugging,database,docs,account",
+      "enabled": true
+    }
+  },
+  "command": {
+    "plan2ship-build": {
+      "description": "Inicia el ciclo Build: implementa el modulo especificado del Project Blueprint usando subagentes en ramas paralelas.",
+      "template": "Activa el skill build para implementar el modulo solicitado segun el Project Blueprint. Divide el trabajo entre subagentes y crea ramas feature/* correspondientes.",
+      "agent": "implementation-super-agent"
+    },
+    "plan2ship-review": {
+      "description": "Inicia el ciclo Review: audita el codigo de una rama contra el Project Blueprint.",
+      "template": "Activa el skill review para auditar el codigo de la rama especificada contra el Project Blueprint. Genera un reporte de cumplimiento.",
+      "agent": "reviewer-agent"
+    },
+    "plan2ship-merge": {
+      "description": "Inicia el ciclo Merge: evalua si la rama puede integrarse basandose en reportes de QA y Review.",
+      "template": "Activa el skill merge para evaluar si la rama especificada puede integrarse a la rama principal. Requiere reportes de QA y Review previos.",
+      "agent": "merge-supervisor-agent"
+    },
+    "plan2ship-ship": {
+      "description": "Inicia el ciclo Ship: despliega la aplicacion segun la estrategia del Project Blueprint.",
+      "template": "Activa el skill deploy para desplegar la aplicacion segun la estrategia definida en el Project Blueprint.",
+      "agent": "devops-agent"
+    },
+    "plan2ship-db": {
+      "description": "Crea o actualiza el esquema de base de datos segun el Project Blueprint.",
+      "template": "Activa el skill build con scope database para crear o actualizar el esquema de base de datos segun el diseno definido en el Project Blueprint.",
+      "agent": "database-agent"
+    },
+    "plan2ship-test": {
+      "description": "Ejecuta pruebas segun los criterios de aceptacion del Project Blueprint.",
+      "template": "Activa el skill testing para crear y ejecutar las pruebas definidas en los criterios de aceptacion del Project Blueprint.",
+      "agent": "qa-agent"
+    }
+  }
+}

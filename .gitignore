@@ -16,6 +16,9 @@ node_modules/
 dist/
 build/
 .next/
+# Excepcion: el directorio de skill build no es un build output
+!.opencode/skills/build/
+!.opencode/skills/build/**
 
 # Logs
 *.log

@@ -159,6 +159,16 @@
       "description": "Ejecuta pruebas segun los criterios de aceptacion del Project Blueprint.",
       "template": "Activa el skill testing para crear y ejecutar las pruebas definidas en los criterios de aceptacion del Project Blueprint.",
       "agent": "qa-agent"
+    },
+    "plan2ship-status": {
+      "description": "Muestra el estado actual de todos los sprints del Blueprint. Lee SPRINT_STATUS.md y reporta el avance, sprints completados, en progreso y pendientes.",
+      "template": "Lee el archivo SPRINT_STATUS.md en la raiz del proyecto y reporta el estado actual de todos los sprints: cuales estan COMPLETADOS, EN PROGRESO, BLOQUEADOS y PENDIENTES. Si el archivo no existe, activa el skill sprint-control para inicializarlo leyendo el Project Blueprint.",
+      "agent": "implementation-super-agent"
+    },
+    "plan2ship-next-sprint": {
+      "description": "Continua con el siguiente sprint pendiente del Blueprint. Ideal para reanudar el trabajo despues de un bloqueo o interrupcion.",
+      "template": "Lee SPRINT_STATUS.md para identificar el siguiente sprint en estado PENDIENTE o BLOQUEADO. Activa el skill sprint-control para retomar el ciclo: BUILD -> QA -> REVIEW -> MERGE -> DOD. Asegurate de ejecutar el ciclo completo y continuar con los sprints siguientes hasta completar todos los del Blueprint.",
+      "agent": "implementation-super-agent"
     }
   }
 }

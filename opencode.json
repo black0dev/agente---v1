@@ -131,8 +131,8 @@
   },
   "command": {
     "plan2ship-build": {
-      "description": "Inicia el ciclo Build: implementa el modulo especificado del Project Blueprint usando subagentes en ramas paralelas.",
-      "template": "Activa el skill build para implementar el modulo solicitado segun el Project Blueprint. Divide el trabajo entre subagentes y crea ramas feature/* correspondientes.",
+      "description": "Inicia el ciclo completo de sprints: usa sprint-control como motor principal que orquesta build->QA->review->merge->DoD por cada sprint del Blueprint, hasta completarlos todos.",
+      "template": "Activa el skill sprint-control como motor principal del ciclo. El flujo es: (1) Inicializar SPRINT_STATUS.md con todos los sprints del Blueprint, (2) Para el sprint actual: usar el skill build para implementar con subagentes en ramas feature/*, (3) Invocar qa-agent con el skill testing para verificar datos reales y detectar placeholders, (4) Invocar reviewer-agent con el skill review para auditar contra el Blueprint, (5) Invocar merge-supervisor-agent con el skill merge para aprobar o rechazar, (6) Firmar el DoD del sprint, (7) Continuar automaticamente con el siguiente sprint hasta completar todos los del Blueprint. NUNCA detenerse entre sprints sin bloqueo documentado.",
       "agent": "implementation-super-agent"
     },
     "plan2ship-review": {

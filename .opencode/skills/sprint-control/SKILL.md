@@ -5,7 +5,40 @@ description: Skill de control de sprints para Plan2Ship. Mantiene el estado de c
 
 # Skill: Sprint Control
 
-Este skill es el **mecanismo de control central** de Plan2Ship. Resuelve el problema más crítico: que los agentes se detengan después del Sprint 01 sin continuar los demás sprints.
+Este skill es el **motor principal y orquestador** del ciclo Plan2Ship.
+
+## Arquitectura de Skills (LEER PRIMERO)
+
+```
+sprint-control  ← MOTOR PRINCIPAL (este skill)
+│   Orquesta el ciclo completo sprint por sprint
+│   Mantiene SPRINT_STATUS.md
+│   Fuerza: BUILD → QA → REVIEW → MERGE → DOD
+│   Inicia el siguiente sprint automáticamente
+│
+├── build           ← MOTOR DE CONSTRUCCIÓN (fase BUILD de cada sprint)
+│   │   Invocado POR sprint-control en la fase de construcción
+│   │   Divide el trabajo entre subagentes
+│   │   Crea ramas feature/* y coordina DB→Backend→Frontend
+│   │   Verifica ausencia de placeholders antes de terminar
+│
+├── testing         ← MOTOR DE PRUEBAS (fase QA de cada sprint)
+│   Invocado POR sprint-control después del BUILD
+│
+├── review          ← MOTOR DE REVISIÓN (fase REVIEW de cada sprint)
+│   Invocado POR sprint-control después del QA
+│
+├── merge           ← MOTOR DE MERGE (fase MERGE de cada sprint)
+│   Invocado POR sprint-control después del REVIEW
+│
+├── blueprint-validation  ← VALIDACIÓN CRUZADA (usado por review y build)
+│
+├── branch-management     ← GESTIÓN DE RAMAS (usado por build)
+│
+└── deploy          ← DESPLIEGUE (activado al completar TODOS los sprints)
+```
+
+**Regla de uso**: El comando `/plan2ship-build` activa `sprint-control` como punto de entrada. `sprint-control` invoca `build` internamente para la fase de construcción. Nunca se debe invocar `build` directamente para el ciclo completo — siempre a través de `sprint-control`.
 
 ## Por Qué Existe Este Skill
 
